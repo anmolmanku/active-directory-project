@@ -38,3 +38,33 @@ Built on a Proxmox VE 9.1 home lab environment.
 - Domain: dogwood.local
 - Internal VM Network: 10.10.10.0/24 (NAT through Proxmox Wi-Fi)
 - External Network: 10.0.0.0/24 (Home Wi-Fi)
+
+## Configuration Steps
+
+### 1. Windows Server Setup
+To begin with, downloaded the ISO file for Windows Server from Microsoft. It comes in a trial
+Imported it into promox hypervisor, and created a VM of it with 4 cores, 50gb storage, and 4gb ram
+After it was done,  ggve it a static IP of 10.10.10.10 inside 10.10.10.0/24 network, and change the hostname to DC01
+
+### 2. Active Directory Domain Services
+Afterwards, open powershell as admin, (RDP can be configured here and access through laptop), and insall AD Services and management tools
+Promote it to Domain Controller, and the domain is dogwood.local which was created after promoting it
+
+
+### 3. Organizational Units
+Inside domain, dogwood.local, created OU - DogWood Users, and inside DogWood Users, IT, Marketing, Management, HR, Finance were created. All done through powershell
+
+### 4. Users and Security Groups
+a total of 10 users were created and user names and SAM names were given to them
+5 security groups were created - IT department, Marketing Department, Management Team, HR Department, Finance Department
+And each having 2 users
+
+### 5. Group Policy
+First GP created through powershell was to configure 8 length password with maximum 5 trials and complexity on with 30 minutes locking period
+Second GPO was to Screen Lock after 5 minutes of inactivity. It was done through GUI of Active Directory, and it was domainwide. 
+Third GPO Was to restrict control panel access for all groups except for IT. It was done through GUI of AD, and it was on DogWood Users with the exemption of IT 
+
+### 6. Remote Desktop Access
+RDP was configured on the Windows Server through powershell
+And on the laptop, routing was done on the VM network of 10.10.10.0/255 to be accessed by 10.0.0.71 (which is Proxmox IP)
+And then using mstsc, and adding the IP of DC01, 10.10.10.10 and logging in as Administrator with the login password, you can login into the RDP
