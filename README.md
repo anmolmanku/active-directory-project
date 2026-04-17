@@ -36,39 +36,8 @@ Built on a Proxmox VE 9.1 home lab environment.
 | Windows Server VM | DC01 | 10.10.10.10 | Domain Controller, DNS, AD DS |
 
 - Domain: dogwood.local
-- Internal VM Network: 10.10.10.0/24 (NAT through Proxmox Wi-Fi)
-- External Network: 10.0.0.0/24 (Home Wi-Fi)
-
-## Configuration Steps
-
-### 1. Windows Server Setup
-To begin with, downloaded the ISO file for Windows Server from Microsoft. It comes in a trial
-Imported it into promox hypervisor, and created a VM of it with 4 cores, 50gb storage, and 4gb ram
-After it was done,  ggve it a static IP of 10.10.10.10 inside 10.10.10.0/24 network, and change the hostname to DC01
-
-### 2. Active Directory Domain Services
-Afterwards, open powershell as admin, (RDP can be configured here and access through laptop), and insall AD Services and management tools
-Promote it to Domain Controller, and the domain is dogwood.local which was created after promoting it
-
-
-### 3. Organizational Units
-Inside domain, dogwood.local, created OU - DogWood Users, and inside DogWood Users, IT, Marketing, Management, HR, Finance were created. All done through powershell
-
-### 4. Users and Security Groups
-a total of 10 users were created and user names and SAM names were given to them
-5 security groups were created - IT department, Marketing Department, Management Team, HR Department, Finance Department
-And each having 2 users
-
-### 5. Group Policy
-First GP created through powershell was to configure 8 length password with maximum 5 trials and complexity on with 30 minutes locking period
-Second GPO was to Screen Lock after 5 minutes of inactivity. It was done through GUI of Active Directory, and it was domainwide. 
-Third GPO Was to restrict control panel access for all groups except for IT. It was done through GUI of AD, and it was on DogWood Users with the exemption of IT 
-
-### 6. Remote Desktop Access
-RDP was configured on the Windows Server through powershell
-And on the laptop, routing was done on the VM network of 10.10.10.0/255 to be accessed by 10.0.0.71 (which is Proxmox IP)
-And then using mstsc, and adding the IP of DC01, 10.10.10.10 and logging in as Administrator with the login password, you can login into the RDP
-
+- Internal VM Network: `10.10.10.0/24` (NAT through Proxmox Wi-Fi)
+- External Network: `10.0.0.0/24` (Home Wi-Fi)
 
 ## Configuration Steps
 
@@ -77,7 +46,7 @@ And then using mstsc, and adding the IP of DC01, 10.10.10.10 and logging in as A
 - Created a VM in Proxmox with 4 cores, 4GB RAM, and 50GB storage
 ![VM Configuration Confirmation](screenshots/VM-Configuration.png)
 ![Server Setup](screenshots/VM-Installation.png)
-- Assigned a static IP of 10.10.10.10/24 with gateway 10.10.10.1
+- Assigned a static IP of `10.10.10.10/24` with gateway `10.10.10.1`
 ![VM Static IP Assignment](screenshots/VM-static-IP-assignment.png)
 - Renamed the server hostname to DC01
 ![Hostname Change](screenshots/VM-hostname-confirmation.png)
@@ -86,12 +55,12 @@ And then using mstsc, and adding the IP of DC01, 10.10.10.10 and logging in as A
 - Installed AD DS and management tools via PowerShell using `Install-WindowsFeature`
 ![AD DS Installation Success](screenshots/AD-DS-Installation-Success.png)
 - Promoted the server to a Domain Controller using `Install-ADDSForest`
-- Created the domain: dogwood.local
+- Created the domain: `dogwood.local`
 ![Promotion of server](screenshots/signout-after-domain-controller-promotion.png)
 ![Domain Login](screenshots/Domain-Login.png)
 
 ### 3. Organizational Units
-- Created a parent OU called "DogWood Users" under dogwood.local
+- Created a parent OU called "DogWood Users" under `dogwood.local`
 - Created five department OUs inside it: IT, HR, Finance, Marketing, Management
 - All OUs created via PowerShell using `New-ADOrganizationalUnit`
 
@@ -110,15 +79,38 @@ And then using mstsc, and adding the IP of DC01, 10.10.10.10 and logging in as A
 ### 5. Group Policy
 - **Password Policy** (PowerShell): Minimum 8 characters, complexity enabled, account lockout after 5 failed attempts for 30 minutes
 ![Password Policy](screenshots/Password-Policy.png)
-- **Screen Lock Policy** (GPMC, domain-wide): Locks screen after 5 minutes of inactivity. Applied at dogwood.local level so it affects all machines
+- **Screen Lock Policy** (GPMC, domain-wide): Locks screen after 5 minutes of inactivity. Applied at `dogwood.local` level so it affects all machines
 ![Screen Lock Policy](screenshots/Screen-Lock-Policy.png)
 - **Restrict Control Panel** (GPMC, OU-level): Blocks Control Panel access for all users in DogWood Users OU. IT Department group is exempted using Deny on Apply Group Policy
-![Restict Control Panel except IT Department](screenshots/IT-Excemption-Restrict-Control_Panel.png)
-![GPO Overview](screenshots/GPO-Overview.png)
+<!-- ![Restict Control Panel except IT Department](screenshots/IT-Excemption-Restrict-Control_Panel.png) -->'
+<img src="screenshots/IT-Excemption-Restrict-Control_Panel.png" alt="Restict Control Panel except IT Department" width="500">
+<!-- ![GPO Overview](screenshots/GPO-Overview.png)-->
+<img src="screenshots/GPO-Overview.png" alt="GPO Overview" width="350"> 
 
 ### 6. Remote Desktop Access
 - Enabled RDP on Windows Server via PowerShell
-- Added a network route on the laptop to reach the 10.10.10.0/24 VM network through Proxmox (10.0.0.71)
+- Added a network route on the laptop to reach the `10.10.10.0/24` VM network through Proxmox (`10.0.0.71`)
 ![Network Route for RDP](screenshots/Network-Route-RDP.png)
-- Connected using `mstsc` to 10.10.10.10 as DOGWOOD\Administrator
-![RDP Connection](screenshots/RDP-Connection.png)
+- Connected using `mstsc` to `10.10.10.10` as `DOGWOOD\Administrator`
+<!-- ![RDP Connection](screenshots/RDP-Connection.png) -->
+<img src="screenshots/RDP-Connection.png" alt="RDP Connection" width="500">
+
+## Company Structure
+
+DogWood Solutions is a simulated small company with 10 employees across five departments:
+
+| Department | Users | Security Group |
+|-----------|-------|---------------|
+| IT | Anmol Singh, James Carter | IT Department |
+| HR | Priya Patel, Sarah Johnson | HR Department |
+| Finance | Michael Chen, Emily Davis | Finance Department |
+| Marketing | David Kim, Lisa Wang | Marketing Department |
+| Management | Robert Taylor, Karen Martinez | Management Team |
+
+## Lessons Learned
+
+- Gained hands-on experience with Active Directory, especially using PowerShell for bulk operations like creating OUs, users, and security groups
+- Learned the importance of security filtering in GPOs. For example, restricting Control Panel access for all employees but exempting the IT Department using "Deny Apply Group Policy"
+- Understood the difference between domain-wide policies (like Screen Lock, which applies to all machines including Domain Controllers) and OU-level policies (like Restrict Control Panel, which only targets the DogWood Users OU to avoid locking out administrators)
+- Learned that Active Directory depends heavily on DNS. The Domain Controller also runs as the DNS server because domain-joined machines use DNS to locate the DC for authentication
+- Learned the importance of Runbooks
